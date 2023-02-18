@@ -15,7 +15,9 @@ stop_button = st.button("Stop")
 
 # Define hand tracking function
 # Define hand tracking function
+# Define hand tracking function
 def track_hands():
+    import cv2
     cap = cv2.VideoCapture(0)
     with mp_hands.Hands(static_image_mode=False, max_num_hands=2, min_detection_confidence=0.5, min_tracking_confidence=0.5) as hands:
         while True:
