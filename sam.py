@@ -1,18 +1,18 @@
 import streamlit as st
 import cv2
-from streamlit_webrtc import webrtc_streamer
-from webrtc_opencv import WebRtcOpencvTransformer
+import numpy as np
+from streamlit_webrtc import VideoProcessorBase, webrtc_streamer
 
 
-class VideoTransformer(WebRtcOpencvTransformer):
-    def transform(self, frame):
+class VideoTransformer(VideoProcessorBase):
+    def transform(self, frame: np.ndarray) -> np.ndarray:
         # Draw a circle on the video frame
-        img = cv2.circle(frame.to_ndarray(format="bgr24"), (50, 50), 30, (255, 0, 0), 5)
+        img = cv2.circle(frame, (50, 50), 30, (255, 0, 0), 5)
         return img
 
 
 def main():
-    webrtc_streamer(key="example", video_transformer_factory=VideoTransformer)
+    webrtc_streamer(key="example", video_processor_factory=VideoTransformer)
 
 if __name__ == "__main__":
     main()
