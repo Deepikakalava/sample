@@ -7,7 +7,7 @@ def main():
         key="example",
         video_transformer_factory=None,
         async_transform=False,
-        source_video=True,
+        video=True
     )
 
     if webrtc_streamer is not None:
