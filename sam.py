@@ -30,7 +30,7 @@ def main():
 
     # Display the camera feed in the app
     if webrtc_streamer is not None:
-        video_frame = video_transformer.get_frame()
+        video_frame = video_transformer.transformed_frame
         st.image(video_frame)
 
 if __name__ == "__main__":
