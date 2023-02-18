@@ -1,28 +1,26 @@
 import streamlit as st
-import cv2
+import imageio
 import mediapipe as mp
 
-# Define hand tracking function
-def track_hands():
-    cap = cv2.VideoCapture(0)
-    with mp.solutions.hands.Hands(max_num_hands=2, min_detection_confidence=0.5, min_tracking_confidence=0.5) as hands:
-        while True:
-            ret, frame = cap.read()
-            if not ret:
-                break
-            # Flip the image horizontally
-            frame = cv2.flip(frame, 1)
-            # Convert image to RGB format
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            # Perform hand tracking on the image
-            results = hands.process(frame)
-            # Display the image with hand tracking overlay
-            if results.multi_hand_landmarks:
-                for hand_landmarks in results.multi_hand_landmarks:
-                    mp.solutions.drawing_utils.draw_landmarks(
-                        frame, hand_landmarks, mp.solutions.hands.HAND_CONNECTIONS)
-            st.image(frame, channels="RGB")
-            # Check if the Stop button is clicked
-            if stop_button:
-                cap.release()
-                break
+# Create a reader object for the default camera
+reader = imageio.get_reader("<video0>")
+
+# Initialize the hand tracking module
+mp_drawing = mp.solutions.drawing_utils
+mp_hands = mp.solutions.hands
+
+with mp_hands.Hands(
+    static_image_mode=False,
+    max_num_hands=2,
+    min_detection_confidence=0.5) as hands:
+
+    # Loop over the frames and display them in Streamlit
+    for frame in reader:
+        # Convert the frame to RGB format
+        frame = frame[:, :, :3]
+        results = hands.process(frame)
+        annotated_frame = frame.copy()
+        if results.multi_hand_landmarks:
+            for hand_landmarks in results.multi_hand_landmarks:
+                mp_drawing.draw_landmarks(
+                    annotated_frame, hand_landmarks, mp_hands.HAND_CONNECTIONS
