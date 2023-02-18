@@ -1,14 +1,15 @@
 import streamlit as st
 import streamlit_webrtc as webrtc
-from aiortc import VideoStreamTrack
+from av import VideoFrame
+import numpy as np
 
 class VideoTransformer(webrtc.VideoTransformerBase):
     def __init__(self):
-        self.frame = None
+        self.video_transformer = None
 
-    def transform(self, frame):
-        self.frame = frame
-        return frame
+    def transform(self, frame: VideoFrame) -> np.ndarray:
+        img = frame.to_ndarray(format="bgr24")
+        return img
 
 def main():
     st.title("Camera feed")
@@ -22,14 +23,14 @@ def main():
     # Create a webrtc streamer with the custom video transformer
     webrtc_streamer = webrtc.webrtc_streamer(
         key="example",
-        video_transformer_factory=video_transformer,
+        video_processor_factory=video_transformer,
         rtc_configuration=rtc_configuration,
-        async_transform=False,
+        async_processing=False,
     )
 
     # Display the camera feed in the app
     if webrtc_streamer is not None:
-        video_frame = video_transformer.frame
+        video_frame = video_transformer.get_frame()
         st.image(video_frame)
 
 if __name__ == "__main__":
